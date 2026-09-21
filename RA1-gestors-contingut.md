@@ -40,8 +40,9 @@ El port 80 de l'ordinador ja el fa servir el servidor tradicional, per això el 
 5. [Seguretat, actualitzacions, proves i còpies](#5-seguretat-actualitzacions-proves-i-còpies)
 6. [La part amb Docker](#6-la-part-amb-docker)
 7. [Com es qualifica](#7-com-es-qualifica)
-   - 7.1 [Els 5 aspectes (100 % de la UD1)](#71-els-5-aspectes-100--de-la-ud1)
-   - 7.2 [La prova final (sessions 19 i 20)](#72-la-prova-final-sessions-19-i-20)
+   - 7.1 [Els 5 aspectes (60 % de la UD1)](#71-els-5-aspectes-60--de-la-ud1)
+   - 7.2 [La prova final (40% sessions 19 i 20)](#72-la-prova-final-40-sessions-19-i-20)
+
    - 7.3 [Què no es valora](#73-què-no-es-valora)
 8. [L'únic lliurable: la memòria tècnica](#8-lúnic-lliurable-la-memòria-tècnica)
    - 8.1 [Els 6 blocs](#81-els-6-blocs)
@@ -219,14 +220,14 @@ El lloc en contenidors es publica al **port 80 del servidor net** i surt a l'ord
 
 ## 7. Com es qualifica
 
-### 7.1 Els 5 aspectes (100 % de la UD1)
+### 7.1 Els 5 aspectes (60 % de la UD1)
 
 | # | Aspecte | Pes | D'on surt l'evidència |
 | :-: | --- | :-: | --- |
 | 1 | Instal·lació i configuració de la infraestructura | 20 % | bloc B1 + comprovació a l'aula + script de verificació |
 | 2 | Administració del CMS: usuaris, rols, menús, mòduls i continguts | 20 % | blocs B2 i B3 |
-| 3 | Seguretat, actualització, proves i còpies de seguretat | 20 % | blocs B4 i B5 + prova final |
-| 4 | Desplegament amb Docker Compose | 20 % | bloc B6 + prova final |
+| 3 | Seguretat, actualització, proves i còpies de seguretat | 20 % | blocs B4 i B5 |
+| 4 | Desplegament amb Docker Compose | 20 % | bloc B6 |
 | 5 | Funcionament, documentació i justificació tècnica | 20 % | memòria completa + defensa oral |
 
 Cada aspecte es valora amb 4 nivells:
@@ -238,7 +239,7 @@ Cada aspecte es valora amb 4 nivells:
 | **2** | Fet amb ajuda del guió o amb evidències incompletes |
 | **1** | No funciona o no hi ha evidència |
 
-### 7.2 La prova final (sessions 19 i 20, individual i dins de les 20 hores)
+### 7.2 La prova final (40% sessions 19 i 20)
 
 - Com que les sessions són d'una hora, la prova es fa en **dues sessions de 5 punts**
 
