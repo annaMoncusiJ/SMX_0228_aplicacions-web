@@ -340,6 +340,120 @@ $ stat -c '%a %U' /var/www/torreroja
 
 ---
 
+
+> [!NOTE]
+> **Teoria · Per què la configuració és el punt crític**
+>
+> `wp-config.php` és l'únic fitxer del lloc que **no es pot regenerar** si el perds: conté les credencials de la base de dades i les **sals**.
+>
+> **Les sals** són cadenes aleatòries que s'afegeixen a les contrasenyes abans de fer-ne l'empremta. Amb les sals d'exemple (`put your unique phrase here`), tothom que conegui el gestor pot precalcular taules d'empremtes i atacar-les. Amb sals pròpies i aleatòries, això no serveix de res.
+>
+> **El prefix de taules** (`tr_` en lloc de `wp_`) no és una mesura de seguretat real, però obliga un atacant que intenti una injecció SQL a endevinar primer com es diuen les taules.
+>
+> **`WP_DEBUG`** fa que el lloc mostri els errors de PHP a la pantalla. En desenvolupament és útil; en producció revela camins de fitxers i versions. Per això es deixa a `false` i es desa en un fitxer de registre.
+>
+> **El directori del lloc:**
+>
+> | Ruta | Què hi ha |
+> | --- | --- |
+> | `wp-admin/` | el tauler d'administració |
+> | `wp-content/` | temes, mòduls i **les pujades dels usuaris** |
+> | `wp-includes/` | el nucli del gestor |
+>
+> La conseqüència important: **una còpia de seguretat són `wp-content/` + la base de dades.** La resta es pot tornar a baixar.
+
+
+## Pas 7 · `wp-config.php` (S6)
+
+Copia la plantilla i edita-la:
+
+```bash
+sudo cp /var/www/torreroja/wp-config-sample.php /var/www/torreroja/wp-config.php
+sudo nano /var/www/torreroja/wp-config.php
+```
+
+Quatre coses hi han de quedar correctes: les credencials de la base de dades (`DB_NAME` = `torreroja_db`, `DB_USER` = `wpuser`, la contrasenya que has posat al pas 4 i `DB_HOST` = `localhost`), el **prefix de taules** `$table_prefix = 'tr_';` i el **bloc de vuit sals**, que has de substituir per unes de noves generades a <https://api.wordpress.org/secret-key/1.1/salt/>.
+
+Comprovació:
+
+```bash
+grep -nE "DB_NAME|DB_USER|table_prefix|AUTH_KEY" /var/www/torreroja/wp-config.php
+```
+
+> **Trampa:** el propietari del fitxer és `www-data`. Si l'intentes editar sense `sudo`, *Permission denied*.
+
+---
+
+> [!NOTE]
+> **Teoria · Què passa realment quan «instal·les»**
+>
+> L'instal·lador no copia fitxers (ja hi són): **crea l'estructura de la base de dades**. Concretament, 12 taules: continguts (`tr_posts`), comentaris, usuaris (`tr_users`), opcions del lloc (`tr_options`), metadades i enllaços, entre d'altres.
+>
+> **`siteurl` i `home`** queden desats a `tr_options` i són l'adreça que el CMS fa servir per construir **tots** els enllaços. Si canvien (per exemple, hi afegeixes un port o un domini), el lloc comença a generar enllaços trencats. Treballar al **port 80** evita aquest problema: l'adreça és `http://127.0.0.1`, sense res més.
+>
+> **Per què l'administrador no s'ha de dir `admin`?** Un atac de força bruta necessita un usuari i una contrasenya. Si el nom d'usuari és el previsible, a l'atacant només li queda provar contrasenyes.
+>
+> **Contrasenyes i rols.** La contrasenya no es desa en clar: se'n guarda una empremta. I el compte d'administrador té **totes** les capacitats del sistema: per a la feina diària, sempre un compte amb menys permisos.
+
+## Pas 8 · Instal·lador web (S6)
+
+Obre `http://127.0.0.1` des del navegador de l'ordinador, tria **català**, posa el títol del lloc (*Portal de l'Institut Torre Roja*), crea el compte d'administrador amb un **nom no previsible** i una contrasenya forta, i deixa l'adreça com està.
+
+Comprovació:
+
+```bash
+sudo mariadb -e "SELECT COUNT(*) AS taules FROM information_schema.tables WHERE table_schema='torreroja_db';"
+sudo mariadb -e "SELECT option_value FROM torreroja_db.tr_options WHERE option_name='siteurl';"
+```
+
+Han de sortir **12 taules** i `http://127.0.0.1` (sense port).
+
+---
+
+> [!NOTE]
+> **Teoria · Continguts, rols i mòduls**
+>
+> **Pàgines i entrades** no són el mateix: una **pàgina** és contingut permanent i jeràrquic (*Qui som*, *Normes del fòrum*); una **entrada** és contingut datat que va a la portada i al canal RSS.
+>
+> **Els enllaços permanents** decideixen com són les URL. Per defecte són `?p=123`; amb l'estructura `/%postname%/` passen a ser `/hola-mon/`. Aquesta reescriptura la fa `mod_rewrite` gràcies a l'`AllowOverride All` del pas 5: si no l'has posat, les URL amigables donaran **404**.
+>
+> **El canal RSS** (`/feed/`) és el lloc en format XML perquè altres aplicacions el llegeixin. Fixa-t'hi en la barra final: sense ella, el gestor fa un **301** de redirecció.
+>
+> **Un rol és un paquet de capacitats.** Una capacitat és un permís concret (*editar entrades*, *instal·lar mòduls*, *moderar comentaris*). El gestor en porta cinc de fàbrica; el projecte en demana **quatre de propis**:
+>
+> | Rol | Capacitats |
+> | --- | --- |
+> | **Administrador** | tot, inclosa la instal·lació de mòduls |
+> | **Professor** | crea i edita els seus continguts, modera el seu fòrum |
+> | **Alumne** (ESO, BATX i FP) | llegeix el que li pertoca i participa als fòrums permesos |
+> | **Convidat** | només lectura del contingut públic |
+>
+> **Un mòdul** (*plugin*) és codi de tercers que s'executa dins del teu lloc amb els permisos del servidor. És la funcionalitat que no porta el nucli i, alhora, **la porta d'entrada més habitual** d'un incident de seguretat: per això se n'instal·len pocs, coneguts i mantinguts.
+
+## Pas 9 · Ajustaments, estructura, usuaris, rols i mòduls (S7–S10)
+
+Tot aquest pas es fa des del **tauler** (`http://127.0.0.1/wp-admin`), no des del terminal.
+
+- [ ] lloc en català
+- [ ] zona horària i el format de data correctes
+- [ ] activa els **enllaços permanents** amb l'estructura del nom de l'entrada. 
+- [ ] crea les **pàgines** de l'estructura (inici, qui som, normativa del fòrum, contacte), el **menú**
+- [ ] comprova que el **canal RSS** respon a `/feed/`. 
+- [ ] crea els **quatre rols** del projecte
+- [ ] crea un usuari de prova per a cada rol
+- [ ] instal·la els **mòduls** que necessitis —com a màxim tres o quatre— i apunta al bloc **B3** una línia per mòdul dient **per què** l'has triat.
+
+Comprovació:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/feed/     # 200
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/hola-mon/  # 200, no 404
+```
+
+Una captura del lloc en **finestra d'incògnit**, amb l'idioma canviat: va al bloc **B3**.
+
+---
+
 ## Si alguna cosa no funciona
 
 1. `sudo systemctl is-active apache2 mariadb`
