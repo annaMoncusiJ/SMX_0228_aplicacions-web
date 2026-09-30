@@ -26,7 +26,7 @@
 | :-: | :-: | :-: | --- | :-: |
 | ☐ | 3 | S3 | `apache2ctl -v`, `php -v` i `mariadb --version` responen; Apache i MariaDB en `active (running)` | **B1** (requeriments) |
 | ☐ | 4 | S3 | `SHOW GRANTS` de `wpuser` només mostra `SELECT, INSERT, UPDATE, DELETE` sobre `torreroja.*` | **B1** |
-| ☐ | 5 | S4 | `curl -I http://127.0.0.1/` → **200** i les 4 capçaleres de seguretat | **B1** → lliura a S4 |
+| ☐ | 5 | S4 | `curl.exe -I http://127.0.0.1/` → **200** i les 4 capçaleres de seguretat | **B1** → lliura a S4 |
 | ☐ | 6 | S5 | `ls -l /var/www/torreroja` tot de `www-data`; `/wp-config.php` → **403** | **B2** |
 | ☐ | 7 | S6 | `wp-config.php` amb prefix `tr_` i sals pròpies (no les d'exemple) | **B2** |
 | ☐ | 8 | S6 | L'instal·lador acaba bé i `SELECT COUNT(*)` dona **12 taules** | **B2** → lliura a S6 |
@@ -278,7 +278,7 @@ sudo systemctl reload apache2
 Comprovació **des del teu ordinador** (amb la regla NAT `80→80` posada):
 
 ```bash
-curl -I http://127.0.0.1
+curl.exe -I http://127.0.0.1
 ```
 
 Ha de tornar `200`, `Server: Apache` (no la versió completa) i les tres capçaleres de seguretat.
@@ -317,7 +317,7 @@ Ha de tornar `200`, `Server: Apache` (no la versió completa) i les tres capçal
 
 ```bash
 cd /tmp
-curl -LO https://ca.wordpress.org/latest-ca.tar.gz
+curl.exe -LO https://ca.wordpress.org/latest-ca.tar.gz
 sha256sum latest-ca.tar.gz                      # anota-ho al bloc B2
 tar -tzf latest-ca.tar.gz | head                # mira abans de desempaquetar
 sudo tar -xzf latest-ca.tar.gz -C /var/www/torreroja --strip-components=1
@@ -446,8 +446,8 @@ Tot aquest pas es fa des del **tauler** (`http://127.0.0.1/wp-admin`), no des de
 Comprovació:
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/feed/     # 200
-curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/hola-mon/  # 200, no 404
+curl.exe -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/feed/     # 200
+curl.exe -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/hola-mon/  # 200, no 404
 ```
 
 Una captura del lloc en **finestra d'incògnit**, amb l'idioma canviat: va al bloc **B3**.
@@ -458,7 +458,7 @@ Una captura del lloc en **finestra d'incògnit**, amb l'idioma canviat: va al bl
 
 1. `sudo systemctl is-active apache2 mariadb`
 2. `sudo ss -lntp`
-3. `curl -v http://127.0.0.1/`
+3. `curl.exe -v http://127.0.0.1/`
 4. `sudo tail -50 /var/log/apache2/error.log` (sense `sudo` no es pot llegir)
 5. `sudo apache2ctl configtest` i `sudo apache2ctl -S`
 6. `ls -l /var/www/torreroja`
@@ -473,4 +473,5 @@ Una captura del lloc en **finestra d'incògnit**, amb l'idioma canviat: va al bl
 | «Error establint la connexió amb la base de dades» | Credencials o `DB_HOST` | Revisa `wp-config.php` i `SHOW GRANTS` |
 | `php -m` no mostra `mysqli` | Falta `php-mysql` | `sudo apt install php-mysql` |
 | No es pot pujar una imatge | `upload_max_filesize` o permisos d'`uploads` | puja el límit i `chown www-data` |
+| `wp-config-sample.php: El fitxer o directori no existeix` | El pas 6 no s'ha executat o la descàrrega no és un paquet vàlid | `ls /var/www/torreroja` (buit?) i `stat -c %s latest-ca.tar.gz`: han de ser uns **42 MB**. Torna a baixar i a extreure |
 | `AH00526` en arrencar Apache | `ServerTokens` dins del `<VirtualHost>` | Ha d'anar fora del bloc |

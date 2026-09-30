@@ -268,7 +268,7 @@ S'hi afegeix **un segon fitxer**: `compose.yml`. Res més.
 
 | Bloc | Què hi va (màxim) | Pàg. | CA | Lliurament |
 | :-: | --- | :-: | :-: | :-: |
-| **B1** Infraestructura i requisits | taula de requisits (8.2) + 2 captures: `SHOW GRANTS` i `curl -I http://127.0.0.1` | 1 | 1.1 | S4 |
+| **B1** Infraestructura i requisits | taula de requisits (8.2) + 2 captures: `SHOW GRANTS` i `curl.exe -I http://127.0.0.1` | 1 | 1.1 | S4 |
 | **B2** Instal·lació i configuració del CMS | 3 línies sobre l'estructura de directoris + 2 captures: `ls -l` amb permisos i `wp-config.php` amb les dades tapades | 1 | 1.1 | S6 |
 | **B3** Administració del portal | matriu de rols (8.3) + llista de mòduls amb 1 línia de justificació cadascun + 1 captura d'una prova d'accés en incògnit | 1 | 1.2, 1.3, 1.6 | S10 |
 | **B4** Seguretat i actualitzacions | llista de les mesures aplicades (8.4) + registre d'actualitzacions de 3 files (8.5) | 1 | 1.5, 1.7 | S13 |
@@ -289,7 +289,7 @@ Llegiu la documentació oficial del CMS i contrasteu-ho amb la vostra màquina.
 | Gestor de base de dades i versió | | | `mariadb --version` |
 | Memòria i espai | | | `free -h` · `df -h /var/www` |
 | Límits de PHP | | | `php -i \| grep -E 'memory_limit\|upload_max'` |
-| Port del lloc i redirecció NAT | | | `ss -lntp` + `curl -I http://127.0.0.1` |
+| Port del lloc i redirecció NAT | | | `ss -lntp` + `curl.exe -I http://127.0.0.1` |
 
 ### 8.3 Matriu de rols i capacitats (bloc B3)
 
@@ -334,7 +334,7 @@ A la S11 ompliu les tres primeres columnes; a la S14, les dues últimes.
 
 | ID | Objectiu | Com es comprova | Resultat obtingut | OK? |
 | :-: | --- | --- | --- | :-: |
-| P01 | El lloc respon des de l'ordinador | `curl -I http://127.0.0.1` → 200 | | ☐ |
+| P01 | El lloc respon des de l'ordinador | `curl.exe -I http://127.0.0.1` → 200 | | ☐ |
 | P02 | Enllaços permanents | Obrir una entrada per URL amigable → 200, no 404 | | ☐ |
 | P03 | Canal RSS | Obrir `/feed` → XML vàlid | | ☐ |
 | P04 | Formulari de contacte | Enviar el formulari → missatge rebut | | ☐ |

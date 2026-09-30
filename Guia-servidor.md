@@ -152,9 +152,9 @@ Comprovacions que faràs tota la unitat:
 | Què vull saber | Ordre |
 | --- | --- |
 | Quins ports escolten a la MV? | `sudo ss -lntp` |
-| El lloc respon? (codi d'estat) | `curl -I http://127.0.0.1/` |
-| Només el número | `curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/` |
-| Ha fallat la connexió o el servidor? | `curl -v http://127.0.0.1/` |
+| El lloc respon? (codi d'estat) | `curl.exe -I http://127.0.0.1/` |
+| Només el número | `curl.exe -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/` |
+| Ha fallat la connexió o el servidor? | `curl.exe -v http://127.0.0.1/` |
 | Puc arribar per SSH? | `ssh alumne@127.0.0.1 -p 2222` |
 
 Codis d'estat que et trobaràs:
@@ -248,8 +248,8 @@ Si aquí hi veus `000-default.conf` i esperaves veure el teu lloc, ja saps per q
 | :-: | --- | --- |
 | 1 | El servei està actiu? | `sudo systemctl is-active apache2` |
 | 2 | Escolta al port que toca? | `sudo ss -lntp \| grep ':80 '` |
-| 3 | Respon des de dins la MV? | `curl -I http://127.0.0.1/` |
-| 4 | Respon des de l'ordinador? | `curl -I http://127.0.0.1/` (amb la regla NAT posada) |
+| 3 | Respon des de dins la MV? | `curl.exe -I http://127.0.0.1/` |
+| 4 | Respon des de l'ordinador? | `curl.exe -I http://127.0.0.1/` (amb la regla NAT posada) |
 | 5 | Què diu el registre d'errors? | `sudo tail -50 /var/log/apache2/error.log` |
 | 6 | La configuració és vàlida? | `sudo apache2ctl configtest` |
 | 7 | Quin lloc virtual està responent? | `sudo apache2ctl -S` |
