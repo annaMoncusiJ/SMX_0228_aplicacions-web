@@ -317,7 +317,7 @@ Ha de tornar `200`, `Server: Apache` (no la versió completa) i les tres capçal
 
 ```bash
 cd /tmp
-curl.exe -LO https://ca.wordpress.org/latest-ca.tar.gz
+curl -LO https://ca.wordpress.org/latest-ca.tar.gz
 sha256sum latest-ca.tar.gz                      # anota-ho al bloc B2
 tar -tzf latest-ca.tar.gz | head                # mira abans de desempaquetar
 sudo tar -xzf latest-ca.tar.gz -C /var/www/torreroja --strip-components=1
